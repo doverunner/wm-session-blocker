@@ -1,0 +1,7 @@
+{
+  "site_id": "{Your DoveRunner Site ID}",
+  "account_id": "{Your DoveRunner Account ID or Email}",
+  "access_key": "{Your DoveRunner Access Key}",
+  "aws_waf_web_acl_id": "{Your AWS WAF WebAcl ID}",
+  "aws_waf_web_acl_name": "{Your AWS WAF WebAcl Name}"
+}
