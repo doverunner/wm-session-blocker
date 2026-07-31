@@ -1,5 +1,5 @@
 const axios = require('axios');
-const {verifyRevokeToken} = require('../api-modules');
+const {verifyWatermarkToken} = require('../api-modules');
 const {API_BASE_URL} = require("../constants");
 
 jest.mock('axios');
@@ -10,7 +10,7 @@ jest.mock('../config.json', () => ({
 const mockAxios = axios;
 
 describe('api-modules test', () => {
-    const REVOKE_TOKEN = 'test-revoke-token';
+    const WATERMARK_TOKEN = 'test-watermark-token';
     const SITE_ID = 'TEST';
 
     beforeEach(() => {
@@ -18,8 +18,8 @@ describe('api-modules test', () => {
         console.error = jest.fn();
     });
 
-    describe('verifyRevokeToken test', () => {
-        describe('when verifying a valid revoke token', () => {
+    describe('verifyWatermarkToken test', () => {
+        describe('when verifying a valid watermark token', () => {
             it('should verify token successfully', async () => {
                 // given
                 const mockJwtToken = 'mock-jwt-token';
@@ -39,7 +39,7 @@ describe('api-modules test', () => {
                 });
 
                 // when
-                const result = verifyRevokeToken(REVOKE_TOKEN);
+                const result = verifyWatermarkToken(WATERMARK_TOKEN);
 
                 // then
                 await expect(result).resolves.not.toThrow();
@@ -57,7 +57,7 @@ describe('api-modules test', () => {
 
                 expect(mockAxios.post).toHaveBeenCalledWith(
                     expect.stringContaining(`${API_BASE_URL}api/v2/detect/${SITE_ID}/revoke-token/verify`),
-                    {revoke_token: REVOKE_TOKEN},
+                    {revoke_token: WATERMARK_TOKEN},
                     expect.objectContaining({
                         headers: expect.objectContaining({
                             'Authorization': mockJwtToken,
@@ -88,15 +88,15 @@ describe('api-modules test', () => {
                 });
 
                 // when
-                const result = verifyRevokeToken(REVOKE_TOKEN);
+                const result = verifyWatermarkToken(WATERMARK_TOKEN);
 
                 // then
-                await expect(result).rejects.toThrow('Revoke token verification failed');
+                await expect(result).rejects.toThrow('Watermark token verification failed');
 
                 expect(console.error).toHaveBeenCalledWith(
-                    '[verifyRevokeToken] Token validation failed:',
+                    '[verifyWatermarkToken] Token validation failed:',
                     expect.objectContaining({
-                        revoke_token: REVOKE_TOKEN
+                        site_id: SITE_ID
                     })
                 );
             });
@@ -112,7 +112,7 @@ describe('api-modules test', () => {
                 });
 
                 // when
-                const result = verifyRevokeToken(REVOKE_TOKEN);
+                const result = verifyWatermarkToken(WATERMARK_TOKEN);
 
                 // then
                 await expect(result).rejects.toThrow('Failed to retrieve JWT token');

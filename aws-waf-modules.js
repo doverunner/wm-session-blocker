@@ -9,12 +9,12 @@ const {
 const wafClient = new WAFV2Client({ region: AWS_WAF_REGION });
 
 /**
- * Checks if a revoke token is already registered in AWS WAF rules
- * @param {string} revokeToken - The watermark revoke token to check
+ * Checks if a watermark token is already registered in AWS WAF rules
+ * @param {string} watermarkToken - The watermark token to check
  * @throws {Error} If token is already registered or check fails
  */
-async function validateRuleNotDuplicated(revokeToken) {
-    const base64Url = toBase64Url(revokeToken)
+async function validateRuleNotDuplicated(watermarkToken) {
+    const base64Url = toBase64Url(watermarkToken)
     const searchString = '/' + base64Url
 
     try {
@@ -33,28 +33,27 @@ async function validateRuleNotDuplicated(revokeToken) {
 
             if (existingSearchString && isUriPathMatch) {
                 if (Buffer.compare(existingSearchString, Buffer.from(searchString)) === 0) {
-                    console.error('[validateRuleNotDuplicated] Duplicate revoke token detected:', {
+                    console.error('[validateRuleNotDuplicated] Duplicate watermark token detected:', {
                         rule_name: rule.Name,
-                        rule_priority: rule.Priority,
-                        revoke_token: searchString
+                        rule_priority: rule.Priority
                     });
-                    throw new Error(`Revoke token '${revokeToken}' is already registered in WAF rule: ${rule.Name}`);
+                    throw new Error(`Watermark token '${watermarkToken}' is already registered in WAF rule: ${rule.Name}`);
                 }
             }
         }
     } catch (error) {
-        console.error('[validateRuleNotDuplicated] Error checking revoke token in WAF:', error);
+        console.error('[validateRuleNotDuplicated] Error checking watermark token in WAF:', error);
         throw error;
     }
 }
 
 /**
- * Adds a new WAF rule to block requests containing the revoke token
- * @param {string} revokeToken - The revoke token to block
+ * Adds a new WAF rule to block requests containing the watermark token
+ * @param {string} watermarkToken - The watermark token to block
  * @throws {Error} If rule creation fails
  */
-async function createBlockingRule(revokeToken) {
-    const base64Url = toBase64Url(revokeToken)
+async function createBlockingRule(watermarkToken) {
+    const base64Url = toBase64Url(watermarkToken)
     const searchString = '/' + base64Url;
 
     try {
@@ -113,7 +112,7 @@ async function createBlockingRule(revokeToken) {
         await wafClient.send(updateWebAclCmd);
         console.log('[createBlockingRule] Successfully added blocking rule:', newRuleName);
     } catch (error) {
-        console.error('[createBlockingRule] Error adding revoke token blocking rule to WAF:', error);
+        console.error('[createBlockingRule] Error adding watermark token blocking rule to WAF:', error);
         throw error;
     }
 }

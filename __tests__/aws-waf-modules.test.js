@@ -16,11 +16,11 @@ jest.mock('@aws-sdk/client-wafv2', () => {
 const {mockSend: mockWafSend} = require('@aws-sdk/client-wafv2');
 
 describe('aws-waf-modules test', () => {
-    const REVOKE_TOKEN = 'test-revoke-token';
+    const WATERMARK_TOKEN = 'test-watermark-token';
     const toBase64Url = (input) => {
         return input.replace(/=+$/, "").replace(/[+/]/g, m => (m === "+" ? "-" : "_"));
     };
-    const BASE64_URL_TOKEN = toBase64Url(REVOKE_TOKEN);
+    const BASE64_URL_TOKEN = toBase64Url(WATERMARK_TOKEN);
     const SEARCH_STRING = '/' + BASE64_URL_TOKEN;
 
     beforeEach(() => {
@@ -51,7 +51,7 @@ describe('aws-waf-modules test', () => {
                 mockWafSend.mockResolvedValue(mockWebACL);
 
                 // when
-                const result = validateRuleNotDuplicated(REVOKE_TOKEN);
+                const result = validateRuleNotDuplicated(WATERMARK_TOKEN);
 
                 // then
                 await expect(result).resolves.not.toThrow();
@@ -84,11 +84,11 @@ describe('aws-waf-modules test', () => {
                 mockWafSend.mockResolvedValue(mockWebACL);
 
                 // when
-                const result = validateRuleNotDuplicated(REVOKE_TOKEN);
+                const result = validateRuleNotDuplicated(WATERMARK_TOKEN);
 
                 // then
                 await expect(result).rejects.toThrow(
-                    `Revoke token '${REVOKE_TOKEN}' is already registered in WAF rule: ${existingRuleName}`
+                    `Watermark token '${WATERMARK_TOKEN}' is already registered in WAF rule: ${existingRuleName}`
                 );
             });
         });
@@ -114,7 +114,7 @@ describe('aws-waf-modules test', () => {
                 mockWafSend.mockResolvedValueOnce(mockWebACL);
 
                 // when
-                const result = createBlockingRule(REVOKE_TOKEN);
+                const result = createBlockingRule(WATERMARK_TOKEN);
 
                 // then
                 await expect(result).resolves.not.toThrow();
@@ -146,9 +146,9 @@ describe('aws-waf-modules test', () => {
                     .mockRejectedValueOnce(mockError);
 
                 // when & then
-                await expect(createBlockingRule(REVOKE_TOKEN)).rejects.toThrow('WAF UpdateWebACL failed');
+                await expect(createBlockingRule(WATERMARK_TOKEN)).rejects.toThrow('WAF UpdateWebACL failed');
                 expect(console.error).toHaveBeenCalledWith(
-                    '[createBlockingRule] Error adding revoke token blocking rule to WAF:',
+                    '[createBlockingRule] Error adding watermark token blocking rule to WAF:',
                     mockError
                 );
             });

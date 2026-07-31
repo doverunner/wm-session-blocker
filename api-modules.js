@@ -3,15 +3,17 @@ const { API_BASE_URL } = require('./constants.js');
 const config = require('./config.json');
 
 /**
- * Verifies the validity of a revoke token with DoveRunner API
- * @param {string} revokeToken - 7-byte watermark revoke token to verify
+ * Verifies the validity of a watermark token with DoveRunner API.
+ *
+ * @param {string} watermarkToken - 7-byte watermark token to verify
+ * @returns {Promise<void>} Resolves when the token is valid
  * @throws {Error} When token verification fails or token is invalid
  */
-async function verifyRevokeToken(revokeToken) {
+async function verifyWatermarkToken(watermarkToken) {
     const jwtToken = await getJwtToken();
     const apiUrl = `${API_BASE_URL}api/v2/detect/${config.site_id}/revoke-token/verify`;
 
-    const response = await axios.post(apiUrl, { revoke_token: revokeToken }, {
+    const response = await axios.post(apiUrl, { revoke_token: watermarkToken }, {
         headers: {
             'Authorization': jwtToken,
             'Content-Type': 'application/json'
@@ -21,12 +23,10 @@ async function verifyRevokeToken(revokeToken) {
 
     const isTokenValid = response.data.data.is_valid;
     if (!isTokenValid) {
-        console.error('[verifyRevokeToken] Token validation failed:', {
-            revoke_token: revokeToken,
-            response: response.data,
+        console.error('[verifyWatermarkToken] Token validation failed:', {
             site_id: config.site_id
         });
-        throw new Error(`Revoke token verification failed: ${JSON.stringify(response.data)}`);
+        throw new Error(`Watermark token verification failed: ${JSON.stringify(response.data)}`);
     }
 }
 
@@ -68,5 +68,5 @@ function createBasicAuthHeader(accountId, accessKey) {
 }
 
 module.exports = {
-    verifyRevokeToken
+    verifyWatermarkToken
 };

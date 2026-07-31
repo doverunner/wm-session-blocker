@@ -1,11 +1,11 @@
 {
   "name": "lambda-wm-revoke-token",
-  "version": "1.0.0",
-  "description": "AWS Lambda function for revoking session using AWS WAF",
+  "version": "1.1.0",
+  "description": "AWS Lambda sample that blocks a session via AWS WAF when a DoveRunner detection completes",
   "main": "index.js",
   "author": "server@doverunner.com",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "axios": "^1.11.0"
